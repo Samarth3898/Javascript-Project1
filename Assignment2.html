@@ -1,0 +1,165 @@
+<!DOCTYPE HTML> 
+<html> 
+ 
+<head>
+    <title>
+        Assignment 2
+    </title>
+     
+    <script src=
+"https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js">
+    </script>
+</head>
+ 
+<body style = "text-align:center;" id = "body"> 
+     
+    <button onclick = "constructTable('#table')">
+        click here to construct table
+    </button>
+     
+    <br><br>
+    <p id = "paragraph" style =
+        "font-size: 15px; font-weight: bold;">
+    </p>
+     
+    <table align = "center"
+            id="table" border="1">
+    </table>
+
+    <textarea align = "center"
+    id="textarea">
+    </textarea>
+     
+    <script>
+        var el_up = document.getElementById("paragraph");
+         
+        var list = [
+            { "SNO": "1", "AMOUNT": "2300", "ITEM TYPE": "0" },
+            { "SNO": "2", "AMOUNT": "23500", "ITEM TYPE": "1"},
+            { "SNO": "3", "AMOUNT": "35000", "ITEM TYPE": "2"},
+            {"SNO" : "4", "AMOUNT": "1500", "ITEM TYPE": "0" },
+            {"SNO" : "5", "AMOUNT": "1238", "ITEM TYPE": "2" },
+            {"SNO" : "6", "AMOUNT": "1200", "ITEM TYPE": "1" },
+            {"SNO" : "7", "AMOUNT": "2828", "ITEM TYPE": "0" }
+        ];
+
+        isTableConstructed = 0;
+
+        el_up.innerHTML = "Click on the button to create "
+                +   "the table from the JSON data.<br><br>"
+                + JSON.stringify(list[0]) + "<br>"
+                + JSON.stringify(list[1]) + "<br>"
+                + JSON.stringify(list[2]) + "<br>"
+                + JSON.stringify(list[3]) + "<br>"
+                + JSON.stringify(list[4]) + "<br>"
+                + JSON.stringify(list[5]) + "<br>"
+                + JSON.stringify(list[6]) + "<br>";
+
+
+        var file_location = '';
+
+        function readJsonFile() {
+            var x = document.getElementById('textarea1');
+            file_location = x.innerHTML; 
+            fetch(file_location)
+            .then(response => response.json)
+            .then(json => console.log(json));
+        }
+
+        function calculate(text) {
+            var x = document.getElementById('textarea');
+            x.innerHTML = "tax is : " + text;                            
+        }
+             
+        function constructTable(selector) {
+             
+            // If the table has already been constructed, return
+            if(isTableConstructed == 1)
+            {
+                return;
+            }
+
+            isTableConstructed = 1;
+            // Getting the all column names
+            var cols = Headers(list, selector); 
+  
+            // Traversing the JSON data
+            for (var i = 0; i < list.length; i++) {
+                var row = $('<tr/>');  
+                var item_type = 0;
+                for (var colIndex = 0; colIndex < cols.length; colIndex++)
+                {
+                    var val = list[i][cols[colIndex]];
+                    // If there is any key, which is matching
+                    // with the column name
+                    
+                    if (val == null) val = ""; 
+                        row.append($('<td/>').html(val));
+
+                    if(colIndex == 2)
+                    {
+                        var amount = list[i][cols[1]];
+                        item_type = list[i][cols[2]];
+                        var current_amount = 0;
+
+                        // Calculation of tax accordin to item type
+                        if(item_type == 0)
+                        {
+                            current_amount = parseFloat(amount * 0.05);
+                            amount = current_amount;
+                            console.log("value is" + current_amount);
+                            // Adding the last button cell to the row
+                            row.append($('<td><button onclick="calculate(' + current_amount + ')">Calculate</button></td>'));
+                        }
+                        else if(item_type == 1)
+                        {
+                            current_amount = parseFloat(amount * 0.08);
+                            amount = current_amount;
+                            console.log("value is" + current_amount);
+                            // Adding the last button cell to the row
+                            row.append($('<td><button onclick="calculate(' + current_amount + ')">Calculate</button></td>'));
+                        }
+                        else
+                        {
+                            current_amount = parseFloat(amount * 0.12);
+                            amount = current_amount;
+                            console.log("value is" + current_amount);
+                            // Adding the last button cell to the row
+                            row.append($('<td><button onclick="calculate(' + current_amount + ')">Calculate</button></td>'));
+                        } 
+                    }
+                }
+
+                // Adding the row to the table
+                $(selector).append(row);
+            }
+        }
+
+        
+
+         
+        function Headers(list, selector) {
+            var columns = [];
+            var header = $('<tr/>');
+             
+            for (var i = 0; i < list.length; i++) {
+                var row = list[i];
+                 
+                for (var k in row) {
+                    if ($.inArray(k, columns) == -1) {
+                        columns.push(k);
+                         
+                        // Creating the header
+                        header.append($('<th/>').html(k));
+                    }
+                }
+            }
+             
+            // Appending the header to the table
+            $(selector).append(header);
+                return columns;
+        }      
+    </script>
+</body> 
+ 
+</html>
